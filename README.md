@@ -8,11 +8,16 @@ You get 22 direct answers. Each one cites the evidence behind it, scores its own
 
 1. Download **[Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md)**.
 2. Start a fresh conversation with your AI assistant and attach the file.
-3. Send something like:
+3. Send one of these (hover the block and hit the copy icon):
 
-> Please evaluate the attached markdown file and complete all tasks.
+```text
+Please evaluate the attached markdown file and complete all tasks.
+```
 
-> Follow the instructions in the attached file. Work through all 22 questions in order, using everything you know about me.
+```text
+Follow the instructions in the attached file.
+Work through all 22 questions in order, using everything you know about me.
+```
 
 Then let it run. Good output takes a while.
 
