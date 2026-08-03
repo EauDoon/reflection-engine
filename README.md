@@ -6,28 +6,21 @@ You get 22 direct answers. Each one cites the evidence behind it, scores its own
 
 ## How to use it
 
-1. Download **[Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md)**.
-2. Start a fresh conversation with your AI assistant and attach the file.
-3. Send one of these (hover the block and hit the copy icon):
+1. **Download [Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md).**
+
+2. **Open the account where you actually talk.** Not your coding assistant — the one where you've also worked through relationships, money, health, family, and half-formed 2am ideas. Reflection Engine is only as good as the corpus it can see, and a corpus of pull requests produces a portrait of a developer, not of you.
+
+3. **Pick the newest model, with reasoning set as high as it goes.** It has to hold evidence across years of material and weigh counterevidence against it. A fast, cheap model will hand you a horoscope.
+
+4. **Check that memory and chat history are switched on** in that assistant's settings — memory and "reference chat history" in ChatGPT, memory and past-chat search in Claude, personal context in Gemini. With those off, the model is working from a single blank conversation and the whole exercise falls apart.
+
+5. **Start a fresh conversation, attach the file, and send this:**
 
 ```text
 Please evaluate the attached markdown file and complete all tasks.
 ```
 
-```text
-Follow the instructions in the attached file.
-Work through all 22 questions in order, using everything you know about me.
-```
-
 Then let it run. Good output takes a while.
-
-## Pick the right model — and the right account
-
-**Use the newest model your provider offers, with reasoning set as high as it goes.** Reflection Engine asks the model to hold evidence across years of material and weigh counterevidence against it. A fast, cheap model will hand you a horoscope.
-
-**Run it where you actually talk.** Not your coding assistant — the account where you've also worked through relationships, money, health, family, and half-formed 2am ideas. Reflection Engine is only as good as the corpus it can see, and a corpus of pull requests produces a portrait of a developer, not of you.
-
-**Check that memory and chat history are switched on** in that assistant's settings before you run it — memory and "reference chat history" in ChatGPT, memory and past-chat search in Claude, personal context in Gemini. With those off, the model is working from a single blank conversation and the whole exercise falls apart.
 
 ## Security
 
