@@ -6,7 +6,7 @@ You get 22 direct answers. Each one cites the evidence behind it, scores its own
 
 ## How to use it
 
-1. **Download [Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md).**
+1. **Open [Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md), then select GitHub's Download raw file button.**
 
 2. **Open the account where you actually talk.** Not your coding assistant — the one where you've also worked through relationships, money, health, family, and half-formed 2am ideas. Reflection Engine is only as good as the corpus it can see, and a corpus of pull requests produces a portrait of a developer, not of you.
 
