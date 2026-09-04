@@ -1,6 +1,11 @@
 MIT License
 
-Copyright (c) 2026 Daniel Oon
+Portions copyright (c) 2026 Kevin Rose (https://github.com/kropdx/reflection-engine); modifications copyright (c) 2026 Daniel Oon.
+
+This repository is a fork of kropdx/reflection-engine. The prompt body in
+Reflection-Engine-v1.3.md and the bulk of the README are Kevin Rose's work
+from commit a0a0c68. Daniel Oon's two commits on top are README copy-edits
+and the addition of this LICENSE.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
