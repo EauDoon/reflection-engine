@@ -17,3 +17,7 @@ The output uses the existing corpus contract and can be validated, redacted or b
 ## Combine chosen corpora
 
 `node reflection.mjs merge new-corpus.json first.json second.json` combines 2 to 20 explicitly named inputs in their given order. A repeated source ID is included once only when every field agrees, ignoring object key ordering. A conflicting version fails instead of silently choosing a winner. Resolve it yourself or give a genuinely different source its own ID. Different IDs with repeated text remain separate for later review; this command does not invent independent episodes. The combined result must fit 200 sources and 1 MiB before a file is created.
+
+## Choose individual episodes
+
+Copy [selection.json](../templates/selection.json) and set `source_ids` to the exact source IDs you want, for example `["S3", "S1"]`. Run `node reflection.mjs select corpus.json selection.json selected.json`. The new corpus contains only those sources, in the requested order, with every source field preserved. Unknown or duplicate IDs fail. An empty list deliberately produces an empty corpus; it never means all sources. Domain/date configuration can further narrow this selected corpus during packet building. Source IDs describe your choices, not proof of independence or consent from people mentioned in the text.

@@ -20,6 +20,21 @@ test('explicit text import preserves Unicode and untrusted text without logging 
   assert.ok(!existsSync(path('bad.json')));
 }));
 
+test('exact source selection excludes other episodes and rejects stale IDs', () => scenario(({ path, put, get, run }) => {
+  put('corpus.json', corpus); put('selection.json', { version: 1, source_ids: ['S3', 'S1'] });
+  run(['select', path('corpus.json'), path('selection.json'), path('selected.json')]);
+  assert.deepEqual(get('selected.json').sources.map(s => s.id), ['S3', 'S1']);
+  run(['build', path('selected.json'), path('packet.md')]);
+  for (const ids of [['S99'], ['S1', 'S1']]) {
+    put('bad-selection.json', { version: 1, source_ids: ids });
+    run(['select', path('corpus.json'), path('bad-selection.json'), path('bad.json')], 1);
+  }
+  assert.ok(!existsSync(path('bad.json')));
+  put('none.json', { version: 1, source_ids: [] });
+  run(['select', path('corpus.json'), path('none.json'), path('empty.json')]);
+  assert.deepEqual(get('empty.json').sources, []);
+}));
+
 test('merge combines named inputs, coalesces identical IDs and rejects conflicting evidence or unreadable outputs', () => scenario(({ path, put, get, run }) => {
   put('left.json', { version: 1, sources: corpus.sources.slice(0, 2) });
   put('right.json', { version: 1, sources: corpus.sources.slice(1) });
