@@ -86,3 +86,35 @@ test('real CLI refuses malformed UTF-8 without silently replacing evidence',()=>
   run(['build',path('valid-utf8.json'),path('unicode.md')]);
   assert.ok(readFileSync(path('unicode.md'),'utf8').includes('Café, 日本語, 🙂'));
 }));
+
+test('real CLI comparison ignores object key order but preserves actual and array changes',()=>scenario(({path,run,put})=>{
+  const corpus=JSON.parse(fixture);
+  const config={...DEFAULT_CONFIG,mode:'custom',questions:[4]};
+  const answer={id:4,status:'inference',confidence:5,conclusion:'Synthetic interpretation for comparison only.',evidence:['S1','S2'],counterevidence:'The creative episode differs.',alternative:'The examples may reflect different tasks.',action:{step:'Optionally observe another episode.',check:'Review once.',stop:'Stop if unhelpful.'}};
+  const before={corpus,config,report:{version:1,source_ids:['S1','S2','S3'],answers:[answer]}};
+  function reorder(value) {
+    if (Array.isArray(value)) return value.map(reorder);
+    if (value && typeof value==='object') return Object.fromEntries(Object.entries(value).reverse().map(([key,item])=>[key,reorder(item)]));
+    return value;
+  }
+  put('before.json',before);
+  const reordered=reorder(before);
+  put('reordered.json',reordered);
+  run(['compare',path('before.json'),path('reordered.json'),path('same.md')]);
+  const same=readFileSync(path('same.md'),'utf8');
+  assert.match(same,/Edited under the same ID: 0/);
+  assert.match(same,/\| 4 \| inference to inference \| 5 to 5 \| unchanged \|/);
+  const changed=structuredClone(reordered);
+  changed.corpus.sources[0].text+=' A real source edit.';
+  changed.report.answers[0].action.step='A different optional action.';
+  put('changed.json',changed);
+  run(['compare',path('before.json'),path('changed.json'),path('changed.md')]);
+  const changedText=readFileSync(path('changed.md'),'utf8');
+  assert.match(changedText,/Edited under the same ID: 1/);
+  assert.match(changedText,/\| 4 \| inference to inference \| 5 to 5 \| changed \|/);
+  const reorderedEvidence=structuredClone(reordered);
+  reorderedEvidence.report.answers[0].evidence.reverse();
+  put('array-order.json',reorderedEvidence);
+  run(['compare',path('before.json'),path('array-order.json'),path('array-order.md')]);
+  assert.match(readFileSync(path('array-order.md'),'utf8'),/\| 4 \| inference to inference \| 5 to 5 \| changed \|/);
+}));
