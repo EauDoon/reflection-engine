@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "sources": [
+    {"id":"S1","episode":"E1","date":"2026-01-12","domain":"learning","kind":"self-report","text":"Synthetic example: I reduced my practice plan to fifteen minutes and completed four sessions."},
+    {"id":"S2","episode":"E2","date":"2026-02-03","domain":"learning","kind":"self-report","text":"Synthetic example: I tried the short plan again. I missed two sessions during travel and resumed the following week."},
+    {"id":"S3","episode":"E3","date":null,"domain":"creative","kind":"quotation","text":"Synthetic example: For the exhibition I needed a detailed checklist; simplification alone would have missed shipping deadlines."}
+  ]
+}
