@@ -3,6 +3,7 @@ import { readJSON, validateCorpus, writeNew } from './lib/core.mjs';
 import { configure, DEFAULT_CONFIG } from './lib/config.mjs';
 import { buildPacket } from './lib/packet.mjs';
 import { validateReport } from './lib/report.mjs';
+import { redact } from './lib/redact.mjs';
 const args = process.argv.slice(2);
 try {
   if (args[0] === 'validate-corpus' && args.length === 2) {
@@ -16,10 +17,15 @@ try {
   } else if (args[0] === 'validate-report' && [3,4].includes(args.length)) {
     validateReport(readJSON(args[1]), readJSON(args[2]), args[3] ? readJSON(args[3]) : DEFAULT_CONFIG);
     console.log('Report structure and references are valid. Semantic review is still required.');
-  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json]'); }
+  } else if (args[0] === 'redact' && args.length === 4) {
+    const result = redact(readJSON(args[1]), readJSON(args[2]));
+    writeNew(args[3], JSON.stringify(result.corpus, null, 2) + '\n');
+    console.log('Redacted corpus created; ' + result.count + ' literal substitutions. Review remaining identifying details.');
+  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json] | redact <corpus.json> <rules.json> <new-corpus.json>'); }
 } catch (error) {
   console.error(`Error: ${error.code ? 'File operation failed (' + error.code + ')' : error.message}`);
   process.exitCode = 1;
 }
+
 
 
