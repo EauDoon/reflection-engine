@@ -1,39 +1,46 @@
 # Reflection Engine
 
-Reflection Engine is a single prompt you hand to your AI assistant. It reads across everything that assistant already knows about you — chat history, memory, uploaded files — and writes back a candid, evidence-grounded portrait: your blind spots, the contradictions that explain the most, your most expensive habits, and where your current trajectory is actually heading.
+A prompt for candid, evidence-grounded reflection, with an optional offline companion for preparing exactly what you choose to share. This fork preserves Kevin Rose's [original v1.3 prompt](Reflection-Engine-v1.3.md) and adds a bounded edition with source IDs, uncertainty, selected questions, and explicit exclusions.
 
-You get 22 direct answers. Each one cites the evidence behind it, scores its own confidence, and ends with one concrete thing you can try this week.
+## Start without installing anything
 
-## How to use it
+1. Open [Reflection-Engine-Bounded.md](Reflection-Engine-Bounded.md) and use GitHub's **Download raw file** button.
+2. Read it, then attach or paste it into your chosen assistant together with a few source episodes you explicitly choose. Label each with a source ID, episode ID, date (or unknown), and domain. See [corpus preparation](docs/corpus.md).
+3. Send: `Use the bounded edition with only the source episodes I supplied here. Answer the default three questions. If the evidence is insufficient, say so. Do not access other history, memory, accounts, or files.`
+4. Review source references and alternative explanations. Correct or reject interpretations that do not fit. Try at most one optional action before expanding the run.
 
-1. **Open [Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md), then select GitHub's Download raw file button.**
+The bounded download contains its three default questions and works alone. Assistant access varies; a prompt cannot make unavailable history visible. A larger model or higher reasoning setting does not guarantee a truthful portrait. You do not need to enable account history or memory for this workflow.
 
-2. **Open the account where you actually talk.** Not your coding assistant — the one where you've also worked through relationships, money, health, family, and half-formed 2am ideas. Reflection Engine is only as good as the corpus it can see, and a corpus of pull requests produces a portrait of a developer, not of you.
+## Prepare a packet locally
 
-3. **Pick the newest model, with reasoning set as high as it goes.** It has to hold evidence across years of material and weigh counterevidence against it. A fast, cheap model will hand you a horoscope.
+Requires Node.js 22 or later. Download or clone this repository. No packages, accounts, API keys, install step, or model calls are needed. Run from the repository directory, using a private output folder that already exists:
 
-4. **Check that memory and chat history are switched on** in that assistant's settings — memory and "reference chat history" in ChatGPT, memory and past-chat search in Claude, personal context in Gemini. With those off, the model is working from a single blank conversation and the whole exercise falls apart.
-
-5. **Start a fresh conversation, attach the file, and send this:**
-
-```text
-Please evaluate the attached markdown file and complete all tasks.
+```sh
+node reflection.mjs validate-corpus examples/synthetic-corpus.json
+node reflection.mjs build examples/synthetic-corpus.json /path/to/private/new-packet.md
 ```
 
-Then let it run. Good output takes a while.
+On Windows, replace the output with a quoted absolute path, for example `"C:\your-private-folder\new-packet.md"`. Output files must not exist; the companion never overwrites them. Paths containing spaces must be quoted. The example corpus is entirely fictional. For your own run, copy the [empty corpus](templates/corpus.json) outside the repository and follow [the input contract](docs/corpus.md).
 
-## Security
+The packet contains the bounded instructions, selected upstream question headings, and filtered source text. Read the entire packet before choosing whether to upload it. The companion does not analyze you or generate a portrait. It helps prepare and check files for a model you choose separately.
 
-Reflection Engine is a prompt, not a product. There's no service, no account, no install, and no telemetry — just a markdown file you attach to a conversation you're already having.
+| Workflow | Command or guide |
+| --- | --- |
+| Quick, full, custom question IDs, dates and domains | [Configuration](docs/configuration.md) |
+| Literal replacement before sharing | [Redaction](docs/redaction.md) |
+| JSON output and evidence-reference checks | [Report contract](docs/report-contract.md) |
+| Verify the exact packet you reviewed | [Integrity receipts](docs/receipts.md) |
+| Compare runs and review one experiment | [Follow-up](docs/follow-up.md) |
+| Full local smoke test and command reference | [Offline companion](docs/offline.md) |
 
-That means your data never leaves the AI provider you chose. Nothing is sent back to the author of this prompt or to anyone else — there's no server in the loop to send it to. No third party is added to the trust boundary you already accepted when you signed up with that provider.
+## Boundaries and privacy
 
-One caution on the way out: **the output is sensitive.** It's a blunt read on you, drawn from your most personal conversations. Keep it somewhere private, and think twice before pasting it into a shared workspace or team chat.
+The repository has no service or telemetry. The companion uses local files and the Node standard library, with no network calls. Uploading a packet separately shares its contents with your chosen provider under that provider's settings and policies. A prompt cannot enforce provider retention, prevent model errors, or guarantee that instructions embedded in source text are ignored.
 
----
+Packets and portraits can be sensitive. Keep personal sources, reports, receipts, and redaction maps outside this public repository. Literal redaction does not guarantee anonymity. Validation checks file structure and reference consistency, not the truth of a psychological interpretation. Reflection Engine is not therapy, diagnosis, or a validated assessment.
 
-Reflection Engine is designed to be uncomfortable in a useful way, not cruel. It isn't therapy, and it isn't a diagnosis — it's a sharp outside read on patterns that are hard to see from the inside.
+## Original edition and attribution
 
-The prompt deliberately tells the model that a third party wrote it, so the model never mistakes the questions for your own words and never treats your curiosity as evidence about you. Don't add your name to the file.
+The original [Reflection-Engine-v1.3.md](Reflection-Engine-v1.3.md) remains unchanged for users who want its full 22-question workflow. Its broad-corpus instructions differ from the bounded edition. Choose one workflow explicitly; do not attach both as competing instruction files. The offline builder draws question headings from the original and applies the bounded answer contract.
 
-Built by Kevin Rose — [X](https://x.com/kevinrose) · [Instagram](https://instagram.com/kevinrose)
+Original prompt by Kevin Rose, [upstream repository](https://github.com/kropdx/reflection-engine), [X](https://x.com/kevinrose), [Instagram](https://instagram.com/kevinrose). Fork additions provide local preparation and review workflows. See [LICENSE](LICENSE) for authorship and permission notices.

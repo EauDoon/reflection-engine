@@ -8,7 +8,9 @@ import { receiptFor, verifyReceipt } from './lib/receipt.mjs';
 import { compareRuns } from './lib/compare.mjs';
 const args = process.argv.slice(2);
 try {
-  if (args[0] === 'validate-corpus' && args.length === 2) {
+  if (args.length === 1 && ['--help','-h'].includes(args[0])) {
+    console.log('Commands: validate-corpus, build, redact, receipt, verify-receipt, validate-report, compare. See docs/offline.md for positional arguments.');
+  } else if (args[0] === 'validate-corpus' && args.length === 2) {
     const corpus = validateCorpus(readJSON(args[1]));
     console.log(`Valid corpus: ${corpus.sources.length} sources`);
   } else if (args[0] === 'build' && [3,4].includes(args.length)) {
@@ -37,8 +39,3 @@ try {
   console.error(`Error: ${error.code ? 'File operation failed (' + error.code + ')' : error.message}`);
   process.exitCode = 1;
 }
-
-
-
-
-

@@ -33,4 +33,10 @@ Default to concise Markdown. If structured JSON is requested, use the accompanyi
 
 ## Questions
 
-Choose IDs from the upstream v1.3 catalog supplied alongside this edition. Default to questions 4, 11, and 17 for a small first run. Their wording is a third-party template, not evidence about you. If the catalog is absent, ask for it or accept user-written questions; do not pretend to know the omitted text.
+Use these three default questions for a small first run. Their wording comes from Kevin Rose's upstream v1.3 template and is not evidence about you. When a packet supplies a different selected-question list, answer that list only.
+
+4. What am I making much harder than it needs to be?
+11. What contradiction in me explains the most?
+17. What will future me be grateful that I am doing now?
+
+For other questions, supply your own wording or select from the separate upstream v1.3 catalog. Do not guess omitted questions.
