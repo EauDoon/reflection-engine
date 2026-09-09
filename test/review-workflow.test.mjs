@@ -21,6 +21,22 @@ test('draft reports cover only selected questions and sources without inventing 
   assert.equal(get('full-draft.json').answers.length, 22);
 }));
 
+test('review summaries distinguish decisions and keep hostile notes and claims inert', () => scenario(({ path, put, get, run }) => {
+  const input = exampleRun(); input.report.answers[0].conclusion = '```\n<script>synthetic()</script> [link](javascript:x)';
+  put('run.json', input); run(['review-plan', path('run.json'), path('review.json')]);
+  run(['review-summary', path('run.json'), path('review.json'), path('pending.md')]);
+  assert.match(readFileSync(path('pending.md'), 'utf8'), /Pending: 1/);
+  const review = get('review.json'); Object.assign(review.decisions[0], { decision: 'reject', note: '```\n<svg onload=synthetic()> Not supported.' });
+  put('reviewed.json', review); run(['review-summary', path('run.json'), path('reviewed.json'), path('summary.md')]);
+  const text = readFileSync(path('summary.md'), 'utf8');
+  assert.match(text, /Rejected: 1/); assert.ok(!text.includes('<script>') && !text.includes('<svg'));
+  assert.ok(!text.includes(input.report.answers[0].action.step));
+  assert.ok(!text.includes(corpus.sources[0].text));
+  input.report.answers[0].confidence = 5; put('changed.json', input);
+  run(['review-summary', path('changed.json'), path('reviewed.json'), path('stale.md')], 1);
+  assert.ok(!existsSync(path('stale.md')));
+}));
+
 test('human review is bound to selected run data and requires explicit evidence checks', () => scenario(({ path, put, get, run }) => {
   const input = exampleRun(); put('run.json', input);
   run(['review-plan', path('run.json'), path('review.json')]);
