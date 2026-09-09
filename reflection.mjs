@@ -6,10 +6,13 @@ import { validateReport } from './lib/report.mjs';
 import { redact } from './lib/redact.mjs';
 import { receiptFor, verifyReceipt } from './lib/receipt.mjs';
 import { compareRuns } from './lib/compare.mjs';
+import { runWorkflow, WORKFLOW_COMMANDS } from './lib/workflows.mjs';
 const args = process.argv.slice(2);
 try {
   if (args.length === 1 && ['--help','-h'].includes(args[0])) {
-    console.log('Commands: validate-corpus, build, redact, receipt, verify-receipt, validate-report, compare. See docs/offline.md for positional arguments.');
+    console.log('Commands: validate-corpus, build, redact, receipt, verify-receipt, validate-report, compare, ' + WORKFLOW_COMMANDS.join(', ') + '. See docs/offline.md for positional arguments.');
+  } else if (runWorkflow(args)) {
+    // Preparation and review workflows create only explicitly named new files.
   } else if (args[0] === 'validate-corpus' && args.length === 2) {
     const corpus = validateCorpus(readJSON(args[1]));
     console.log(`Valid corpus: ${corpus.sources.length} sources`);
