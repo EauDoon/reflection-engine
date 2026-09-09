@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -59,4 +59,30 @@ test('real CLI rejects malformed, oversized and missing inputs without echoing c
   run(['validate-corpus',path('huge.json')],1);
   run(['validate-corpus',path('missing.json')],1);
   run(['build',path('corpus.json'),path('x.md'),'extra','unwanted'],1);
+}));
+test('real CLI rejects duplicate domain keys before exclusion filtering',()=>scenario(({path,run,put})=>{
+  put('config.json',{...DEFAULT_CONFIG,exclude:['private']});
+  for (const duplicate of ['domain','\\u0064omain']) {
+    const source='{"version":1,"sources":[{"id":"S1","episode":"E1","date":null,"domain":"private","'+duplicate+'":"learning","kind":"self-report","text":"SYNTHETIC_PRIVATE_MARKER"}]}';
+    writeFileSync(path('ambiguous.json'),source);
+    const result=run(['build',path('ambiguous.json'),path('forbidden.md'),path('config.json')],1);
+    assert.match(result.stderr,/duplicate key/);
+    assert.ok(!result.stderr.includes('SYNTHETIC_PRIVATE_MARKER'));
+    assert.ok(!existsSync(path('forbidden.md')));
+  }
+  writeFileSync(path('ambiguous-config.json'),JSON.stringify(DEFAULT_CONFIG).replace('"exclude":[]','"exclude":["private"],"exclude":[]'));
+  run(['build',path('corpus.json'),path('forbidden.md'),path('ambiguous-config.json')],1);
+  assert.ok(!existsSync(path('forbidden.md')));
+}));
+test('real CLI refuses malformed UTF-8 without silently replacing evidence',()=>scenario(({path,run})=>{
+  const raw=Buffer.from(fixture.replace('Synthetic example','SYNTHETIC_PRIVATE_MARKER'));
+  raw[raw.indexOf('SYNTHETIC_PRIVATE_MARKER')]=0xff;
+  writeFileSync(path('invalid-utf8.json'),raw);
+  const result=run(['build',path('invalid-utf8.json'),path('forbidden.md')],1);
+  assert.match(result.stderr,/valid UTF-8/);
+  assert.ok(!existsSync(path('forbidden.md')));
+  const valid=fixture.replace('Synthetic example','Café, 日本語, 🙂');
+  writeFileSync(path('valid-utf8.json'),Buffer.concat([Buffer.from([0xef,0xbb,0xbf]),Buffer.from(valid)]));
+  run(['build',path('valid-utf8.json'),path('unicode.md')]);
+  assert.ok(readFileSync(path('unicode.md'),'utf8').includes('Café, 日本語, 🙂'));
 }));

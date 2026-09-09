@@ -14,7 +14,7 @@ node reflection.mjs compare before-run.json after-run.json new-comparison.md
 
 Square brackets indicate an optional argument; do not type them. Use the same configuration for building and report validation. The default is quick mode, all supplied domains, no date limit, Markdown output. To request machine validation, set `format` to `json` before building. Save the assistant's JSON response in a new local file, then validate it. A rejected report should be corrected against the original sources, not fixed by raising confidence or adding invented evidence.
 
-Limits: JSON inputs at most 1 MiB, 200 sources, 20000 characters per source; receipt inputs at most 8 MiB. A large corpus may exceed a provider's context window despite passing local checks. Build a narrower run when necessary. Comparison bundles repeat corpus and report data and share the 1 MiB limit. Split a large run into smaller selected corpora rather than bypassing the bounds.
+Limits: JSON inputs at most 1 MiB and 128 nested containers, 200 sources, 20000 characters per source; receipt inputs at most 8 MiB. JSON files must contain valid UTF-8 and unique keys in every object, including names written using Unicode escapes. Duplicate fields are rejected before configuration or filtering, so an ambiguous domain or exclusion cannot silently take the last value. An optional UTF-8 BOM is accepted. Invalid bytes are rejected instead of being replaced in the evidence. A large corpus may exceed a provider's context window despite passing local checks. Build a narrower run when necessary. Comparison bundles repeat corpus and report data and share the 1 MiB limit. Split a large run into smaller selected corpora rather than bypassing the bounds.
 
 ## Synthetic end-to-end validation
 
