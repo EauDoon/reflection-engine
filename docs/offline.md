@@ -11,6 +11,7 @@ node reflection.mjs verify-receipt receipt.json packet.md
 node reflection.mjs validate-report report.json corpus.json [config.json]
 node reflection.mjs compare before-run.json after-run.json new-comparison.md
 node reflection.mjs import-text chosen.txt metadata.json new-corpus.json
+node reflection.mjs merge new-corpus.json first.json second.json [more-corpora.json]
 ```
 
 Square brackets indicate an optional argument; do not type them. Use the same configuration for building and report validation. The default is quick mode, all supplied domains, no date limit, Markdown output. To request machine validation, set `format` to `json` before building. Save the assistant's JSON response in a new local file, then validate it. A rejected report should be corrected against the original sources, not fixed by raising confidence or adding invented evidence.
