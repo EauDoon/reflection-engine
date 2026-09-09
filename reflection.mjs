@@ -4,6 +4,7 @@ import { configure, DEFAULT_CONFIG } from './lib/config.mjs';
 import { buildPacket } from './lib/packet.mjs';
 import { validateReport } from './lib/report.mjs';
 import { redact } from './lib/redact.mjs';
+import { receiptFor, verifyReceipt } from './lib/receipt.mjs';
 const args = process.argv.slice(2);
 try {
   if (args[0] === 'validate-corpus' && args.length === 2) {
@@ -21,11 +22,18 @@ try {
     const result = redact(readJSON(args[1]), readJSON(args[2]));
     writeNew(args[3], JSON.stringify(result.corpus, null, 2) + '\n');
     console.log('Redacted corpus created; ' + result.count + ' literal substitutions. Review remaining identifying details.');
-  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json] | redact <corpus.json> <rules.json> <new-corpus.json>'); }
+  } else if (args[0] === 'receipt' && args.length === 3) {
+    writeNew(args[2], JSON.stringify(receiptFor(args[1]), null, 2) + '\n');
+    console.log('Exact-byte receipt created.');
+  } else if (args[0] === 'verify-receipt' && args.length === 3) {
+    verifyReceipt(readJSON(args[1]), args[2]);
+    console.log('Receipt matches the current packet bytes.');
+  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json] | redact <corpus.json> <rules.json> <new-corpus.json> | receipt <packet.md> <new-receipt.json> | verify-receipt <receipt.json> <packet.md>'); }
 } catch (error) {
   console.error(`Error: ${error.code ? 'File operation failed (' + error.code + ')' : error.message}`);
   process.exitCode = 1;
 }
+
 
 
 
