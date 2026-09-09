@@ -21,3 +21,9 @@ The output uses the existing corpus contract and can be validated, redacted or b
 ## Choose individual episodes
 
 Copy [selection.json](../templates/selection.json) and set `source_ids` to the exact source IDs you want, for example `["S3", "S1"]`. Run `node reflection.mjs select corpus.json selection.json selected.json`. The new corpus contains only those sources, in the requested order, with every source field preserved. Unknown or duplicate IDs fail. An empty list deliberately produces an empty corpus; it never means all sources. Domain/date configuration can further narrow this selected corpus during packet building. Source IDs describe your choices, not proof of independence or consent from people mentioned in the text.
+
+## Inspect coverage before a run
+
+`node reflection.mjs inspect corpus.json inspection.json` writes counts by domain, kind and declared episode, undated source IDs, and groups of byte-for-byte equal JavaScript text strings. No source text, text fingerprint or input path is copied. The local output still contains potentially sensitive metadata and IDs.
+
+Warnings identify an empty corpus, one declared episode, undated sources, repeated text or one source kind. They are review prompts, not a pass score. Declaring separate episode IDs does not prove independent evidence; repeated text is not automatically deleted or reclassified. Use your judgment about whether the chosen material can answer the intended questions. An empty corpus can appropriately yield insufficient evidence.
