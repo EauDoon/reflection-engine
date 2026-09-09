@@ -1,0 +1,4 @@
+# Personal working artifacts belong outside this repository.
+/private/
+/output/
+node_modules/
