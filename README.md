@@ -30,6 +30,7 @@ The packet contains the bounded instructions, selected upstream question heading
 | Quick, full, custom question IDs, dates and domains | [Configuration](docs/configuration.md) |
 | Literal replacement before sharing | [Redaction](docs/redaction.md) |
 | JSON output and evidence-reference checks | [Report contract](docs/report-contract.md) |
+| Draft and review a report locally | [Review workflow](docs/review-workflow.md) |
 | Verify the exact packet you reviewed | [Integrity receipts](docs/receipts.md) |
 | Compare runs and review one experiment | [Follow-up](docs/follow-up.md) |
 | Full local smoke test and command reference | [Offline companion](docs/offline.md) |
