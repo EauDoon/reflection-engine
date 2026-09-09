@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { scenario, corpus } from '../support/cli.mjs';
 import { DEFAULT_CONFIG } from '../lib/config.mjs';
+import { exampleRun } from '../support/run.mjs';
 
 test('draft reports cover only selected questions and sources without inventing answers', () => scenario(({ path, put, get, run }) => {
   put('corpus.json', corpus);
@@ -18,6 +19,24 @@ test('draft reports cover only selected questions and sources without inventing 
   run(['draft-report', path('empty.json'), path('full-draft.json'), path('full.json')]);
   run(['validate-report', path('full-draft.json'), path('empty.json'), path('full.json')]);
   assert.equal(get('full-draft.json').answers.length, 22);
+}));
+
+test('human review is bound to selected run data and requires explicit evidence checks', () => scenario(({ path, put, get, run }) => {
+  const input = exampleRun(); put('run.json', input);
+  run(['review-plan', path('run.json'), path('review.json')]);
+  const review = get('review.json');
+  assert.match(review.run_digest, /^[a-f0-9]{64}$/); assert.equal(review.decisions[0].decision, 'pending');
+  run(['validate-review', path('run.json'), path('review.json')]);
+  Object.assign(review.decisions[0], { decision: 'accept', note: 'Useful but tentative synthetic reading.' }); put('unchecked.json', review);
+  run(['validate-review', path('run.json'), path('unchecked.json')], 1);
+  Object.assign(review.decisions[0], { checked_sources: ['S1', 'S2'], counterevidence_checked: true }); put('checked.json', review);
+  run(['validate-review', path('run.json'), path('checked.json')]);
+  const reordered = Object.fromEntries(Object.entries(input).reverse()); put('reordered.json', reordered);
+  run(['validate-review', path('reordered.json'), path('checked.json')]);
+  input.corpus.sources[0].text += ' Changed source.'; put('changed.json', input);
+  run(['validate-review', path('changed.json'), path('checked.json')], 1);
+  const bad = structuredClone(review); bad.decisions.push(bad.decisions[0]); put('duplicate.json', bad);
+  run(['validate-review', path('run.json'), path('duplicate.json')], 1);
 }));
 
 test('run snapshots omit filtered sources and work directly with comparison', () => scenario(({ path, put, get, run }) => {
