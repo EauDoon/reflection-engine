@@ -16,6 +16,8 @@ Square brackets indicate an optional argument; do not type them. Use the same co
 
 Limits: JSON inputs at most 1 MiB and 128 nested containers, 200 sources, 20000 characters per source; receipt inputs at most 8 MiB. JSON files must contain valid UTF-8 and unique keys in every object, including names written using Unicode escapes. Duplicate fields are rejected before configuration or filtering, so an ambiguous domain or exclusion cannot silently take the last value. An optional UTF-8 BOM is accepted. Invalid bytes are rejected instead of being replaced in the evidence. A large corpus may exceed a provider's context window despite passing local checks. Build a narrower run when necessary. Comparison bundles repeat corpus and report data and share the 1 MiB limit. Split a large run into smaller selected corpora rather than bypassing the bounds.
 
+JSON input is opened once and checked as a regular file using that descriptor. Reads stop after at most 1 MiB plus one overflow-detection byte, even if the file grows after its size check. POSIX opens are nonblocking so a FIFO cannot wait indefinitely for a writer. The descriptor closes on success and failure. This bounds ingestion; it does not make a concurrently edited file an immutable snapshot.
+
 ## Synthetic end-to-end validation
 
 `npm test` runs the standard-library tests and real CLI processes in temporary local directories, including paths with spaces and execution outside the repository. It exercises packet building, filters, JSON format, redaction, report validation, receipts, comparison, invalid input, no-overwrite behavior, and size limits. It never contacts an assistant. `npm run check` checks the CLI syntax. No install is needed because there are no dependencies.
