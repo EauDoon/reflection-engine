@@ -24,6 +24,12 @@ Copy [selection.json](../templates/selection.json) and set `source_ids` to the e
 
 ## Inspect coverage before a run
 
-`node reflection.mjs inspect corpus.json inspection.json` writes counts by domain, kind and declared episode, undated source IDs, and groups of byte-for-byte equal JavaScript text strings. No source text, text fingerprint or input path is copied. The local output still contains potentially sensitive metadata and IDs.
+`node reflection.mjs inspect corpus.json inspection.json` writes counts by domain, kind and declared episode, undated source IDs, and groups of exactly equal source text strings. No source text, text fingerprint or input path is copied. The local output still contains potentially sensitive metadata and IDs.
 
 Warnings identify an empty corpus, one declared episode, undated sources, repeated text or one source kind. They are review prompts, not a pass score. Declaring separate episode IDs does not prove independent evidence; repeated text is not automatically deleted or reclassified. Use your judgment about whether the chosen material can answer the intended questions. An empty corpus can appropriately yield insufficient evidence.
+
+## Explain packet selection
+
+`node reflection.mjs preview corpus.json preview.json config.json` lists selected source IDs, question IDs, format, the exact prospective packet byte count, and each omitted source's filter reasons. The same filter function drives preview and build. A date window excludes undated sources; exclusions take effect even when a domain is included. Empty selection is explicit. Omissions can have several reasons.
+
+The preview contains no source text and is not the packet or an approval receipt. It reflects the files at that moment. Review the actual packet, and use an [integrity receipt](receipts.md) if you need to check its later bytes. Byte length is not a token count or a provider context-window guarantee. Omit the configuration argument to use the default quick run.
