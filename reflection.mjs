@@ -5,6 +5,7 @@ import { buildPacket } from './lib/packet.mjs';
 import { validateReport } from './lib/report.mjs';
 import { redact } from './lib/redact.mjs';
 import { receiptFor, verifyReceipt } from './lib/receipt.mjs';
+import { compareRuns } from './lib/compare.mjs';
 const args = process.argv.slice(2);
 try {
   if (args[0] === 'validate-corpus' && args.length === 2) {
@@ -28,11 +29,15 @@ try {
   } else if (args[0] === 'verify-receipt' && args.length === 3) {
     verifyReceipt(readJSON(args[1]), args[2]);
     console.log('Receipt matches the current packet bytes.');
-  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json] | redact <corpus.json> <rules.json> <new-corpus.json> | receipt <packet.md> <new-receipt.json> | verify-receipt <receipt.json> <packet.md>'); }
+  } else if (args[0] === 'compare' && args.length === 4) {
+    writeNew(args[3], compareRuns(readJSON(args[1]), readJSON(args[2])));
+    console.log('Run comparison created. Interpret changes against source evidence.');
+  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json] | redact <corpus.json> <rules.json> <new-corpus.json> | receipt <packet.md> <new-receipt.json> | verify-receipt <receipt.json> <packet.md> | compare <before-run.json> <after-run.json> <new-comparison.md>'); }
 } catch (error) {
   console.error(`Error: ${error.code ? 'File operation failed (' + error.code + ')' : error.message}`);
   process.exitCode = 1;
 }
+
 
 
 
