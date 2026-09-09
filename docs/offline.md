@@ -16,6 +16,7 @@ node reflection.mjs select corpus.json selection.json new-corpus.json
 node reflection.mjs inspect corpus.json new-inspection.json
 node reflection.mjs preview corpus.json new-preview.json [config.json]
 node reflection.mjs draft-report corpus.json new-report.json [config.json]
+node reflection.mjs pack-run corpus.json report.json new-run.json [config.json]
 ```
 
 Square brackets indicate an optional argument; do not type them. Use the same configuration for building and report validation. The default is quick mode, all supplied domains, no date limit, Markdown output. To request machine validation, set `format` to `json` before building. Save the assistant's JSON response in a new local file, then validate it. A rejected report should be corrected against the original sources, not fixed by raising confidence or adding invented evidence.
