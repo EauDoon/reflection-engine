@@ -7,8 +7,10 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { readJSON, MAX_BYTES } from '../lib/core.mjs';
+import { receiptFor } from '../lib/receipt.mjs';
 
-test('growth after descriptor stat is bounded and the descriptor closes on rejection',()=>{
+for (const [label,reader,limit] of [['JSON',readJSON,MAX_BYTES],['receipt',receiptFor,8*MAX_BYTES]]) {
+test(`${label} growth after descriptor stat is bounded and the descriptor closes on rejection`,()=>{
   const dir=fs.mkdtempSync(join(tmpdir(),'reflection-growing-input-'));
   const path=join(dir,'input.json');
   fs.writeFileSync(path,'{}');
@@ -24,20 +26,20 @@ test('growth after descriptor stat is bounded and the descriptor closes on rejec
       const stat=original.fstatSync(fd);
       // Grow the same regular file only after its original size was observed.
       const writer=original.openSync(path,'a');
-      try {fs.writeSync(writer,Buffer.alloc(MAX_BYTES,32));}
+      try {fs.writeSync(writer,Buffer.alloc(limit,32));}
       finally {original.closeSync(writer);}
       return stat;
     };
     fs.readSync=(fd,buffer,offset,length,position)=>{
       assert.equal(fd,descriptor);
-      assert.equal(buffer.length,MAX_BYTES+1);
+      assert.equal(buffer.length,limit+1);
       const count=original.readSync(fd,buffer,offset,Math.min(length,131072),position);
       reads++;readBytes+=count;return count;
     };
     fs.closeSync=(fd)=>{closed++;return original.closeSync(fd);};
     syncBuiltinESMExports();
-    assert.throws(()=>readJSON(path),/exceeds 1 MiB/);
-    assert.equal(readBytes,MAX_BYTES+1);
+    assert.throws(()=>reader(path),/exceeds [18] MiB/);
+    assert.equal(readBytes,limit+1);
     assert.ok(reads>1);
     assert.equal(opened,1);assert.equal(closed,1);
   } finally {
@@ -46,6 +48,7 @@ test('growth after descriptor stat is bounded and the descriptor closes on rejec
     fs.rmSync(dir,{recursive:true,force:true});
   }
 });
+}
 
 test('POSIX FIFO input is rejected without waiting for a writer',{skip:process.platform==='win32'},()=>{
   const dir=fs.mkdtempSync(join(tmpdir(),'reflection-fifo-input-'));
@@ -54,8 +57,10 @@ test('POSIX FIFO input is rejected without waiting for a writer',{skip:process.p
     const created=spawnSync('mkfifo',[fifo],{encoding:'utf8',timeout:2000});
     assert.equal(created.status,0,created.stderr || String(created.error));
     const cli=fileURLToPath(new URL('../reflection.mjs',import.meta.url));
-    const result=spawnSync(process.execPath,[cli,'validate-corpus',fifo],{encoding:'utf8',timeout:2000});
-    assert.equal(result.status,1,result.stderr || String(result.error));
-    assert.match(result.stderr,/regular file/);
+    for (const args of [['validate-corpus',fifo],['receipt',fifo,join(dir,'receipt.json')]]) {
+      const result=spawnSync(process.execPath,[cli,...args],{encoding:'utf8',timeout:2000});
+      assert.equal(result.status,1,result.stderr || String(result.error));
+      assert.match(result.stderr,/regular file/);
+    }
   } finally {fs.rmSync(dir,{recursive:true,force:true});}
 });
