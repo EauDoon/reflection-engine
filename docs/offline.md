@@ -10,6 +10,18 @@ node reflection.mjs receipt packet.md new-receipt.json
 node reflection.mjs verify-receipt receipt.json packet.md
 node reflection.mjs validate-report report.json corpus.json [config.json]
 node reflection.mjs compare before-run.json after-run.json new-comparison.md
+node reflection.mjs import-text chosen.txt metadata.json new-corpus.json
+node reflection.mjs merge new-corpus.json first.json second.json [more-corpora.json]
+node reflection.mjs select corpus.json selection.json new-corpus.json
+node reflection.mjs inspect corpus.json new-inspection.json
+node reflection.mjs preview corpus.json new-preview.json [config.json]
+node reflection.mjs draft-report corpus.json new-report.json [config.json]
+node reflection.mjs pack-run corpus.json report.json new-run.json [config.json]
+node reflection.mjs review-plan run.json new-review.json
+node reflection.mjs validate-review run.json review.json
+node reflection.mjs review-summary run.json review.json new-summary.md
+node reflection.mjs plan-experiment run.json review.json 4 new-experiment.json
+node reflection.mjs review-experiment run.json review.json experiment.json new-summary.md
 ```
 
 Square brackets indicate an optional argument; do not type them. Use the same configuration for building and report validation. The default is quick mode, all supplied domains, no date limit, Markdown output. To request machine validation, set `format` to `json` before building. Save the assistant's JSON response in a new local file, then validate it. A rejected report should be corrected against the original sources, not fixed by raising confidence or adding invented evidence.
