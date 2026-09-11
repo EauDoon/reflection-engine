@@ -30,3 +30,6 @@ Only accepted answers with a substantive conclusion include their optional model
 # Inspect evidence coverage
 
 `node reflection.mjs evidence-map run.json new-map.json` links each answer to cited source IDs and episode counts, lists uncited selected sources, and warns about zero citations or a single cited episode. The run-bound map omits source text and report prose, but its metadata can still be sensitive. Counts reflect supplied labels, not independently verified episodes or evidence quality.
+# Resume an unfinished review
+
+`node reflection.mjs review-gaps run.json review.json new-gaps.json` lists unchecked citations, missing counterevidence checks, pending decisions and requested revisions. It rejects stale reviews and changes no decisions. Unchecked citations on a rejected or deferred answer are informational; you do not have to accept or finish every answer. A revision requires a new run and review.
