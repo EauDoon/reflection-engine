@@ -33,3 +33,6 @@ Only accepted answers with a substantive conclusion include their optional model
 # Resume an unfinished review
 
 `node reflection.mjs review-gaps run.json review.json new-gaps.json` lists unchecked citations, missing counterevidence checks, pending decisions and requested revisions. It rejects stale reviews and changes no decisions. Unchecked citations on a rejected or deferred answer are informational; you do not have to accept or finish every answer. A revision requires a new run and review.
+# Export selected human acceptances
+
+`node reflection.mjs export-accepted run.json review.json new-excerpt.md` exports only accepted substantive answers. It retains their counterevidence, alternatives, confidence, optional action, explanatory review and cited metadata. Raw source text and other answers are omitted. Acceptance is checked against the exact run and remains self-attested. The excerpt is still sensitive, is not a full report or runnable snapshot, and is never uploaded automatically. With no accepted substantive answers, it contains an empty answer list.
