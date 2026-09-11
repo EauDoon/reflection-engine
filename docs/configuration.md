@@ -7,3 +7,6 @@ Copy `templates/config.json`. `quick` selects 4, 11, 17; `full` selects all 22; 
 `domains` includes only matching domains when nonempty. `exclude` always wins. Domains match exactly. `from` and `to` are inclusive calendar dates or null. Any active date bound excludes sources with unknown dates. Filters remove sources from the actual packet, not just a suggestion to ignore them. Keep excluded private details out of included source text too; this is not semantic redaction.
 
 An empty filtered corpus remains valid and calls for insufficient evidence. `format` is `markdown` or `json`. JSON requires the structured report contract included by the packet builder. Configuration does not establish consent for other accounts or history.
+# Browse questions before choosing a run
+
+`node reflection.mjs questions new-questions.json` exports the 22 preserved question headings and the three quick-mode IDs. It needs no corpus. Use the stable IDs in custom configuration, selecting only questions you want to address. This lists available questions, without recommending sensitive topics or expanding source access.

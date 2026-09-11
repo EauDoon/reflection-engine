@@ -27,3 +27,12 @@ Run `node reflection.mjs review-plan run.json review.json`. Every question begin
 `node reflection.mjs review-summary run.json review.json summary.md` creates a question-by-question review with decision counts, your notes and source checks, cited source metadata, the model's status and confidence, conclusion, counterevidence and alternative. Source text is omitted; consult the private run for the original passages. Untrusted fields are escaped in JSON code blocks so Markdown, HTML and code-fence-shaped strings stay data.
 
 Only accepted answers with a substantive conclusion include their optional model action proposal. Pending, rejected, deferred, revision-needed and insufficient-evidence answers provide no action proposal in this view. Acceptance remains your recorded judgment, not verified accuracy or permission to execute anything. To revise a conclusion, edit a report copy against the original evidence, create a new run, and complete a fresh review. The tool never silently rewrites the model's claim to match your decision.
+# Inspect evidence coverage
+
+`node reflection.mjs evidence-map run.json new-map.json` links each answer to cited source IDs and episode counts, lists uncited selected sources, and warns about zero citations or a single cited episode. The run-bound map omits source text and report prose, but its metadata can still be sensitive. Counts reflect supplied labels, not independently verified episodes or evidence quality.
+# Resume an unfinished review
+
+`node reflection.mjs review-gaps run.json review.json new-gaps.json` lists unchecked citations, missing counterevidence checks, pending decisions and requested revisions. It rejects stale reviews and changes no decisions. Unchecked citations on a rejected or deferred answer are informational; you do not have to accept or finish every answer. A revision requires a new run and review.
+# Export selected human acceptances
+
+`node reflection.mjs export-accepted run.json review.json new-excerpt.md` exports only accepted substantive answers. It retains their counterevidence, alternatives, confidence, optional action, explanatory review and cited metadata. Raw source text and other answers are omitted. Acceptance is checked against the exact run and remains self-attested. The excerpt is still sensitive, is not a full report or runnable snapshot, and is never uploaded automatically. With no accepted substantive answers, it contains an empty answer list.

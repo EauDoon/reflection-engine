@@ -27,3 +27,14 @@ node reflection.mjs review-experiment run.json review.json experiment.json exper
 ```
 
 The summary validates the unchanged action, dates, notes and run binding, then displays the recorded decision as self-reported data. It does not judge whether the action worked, infer a cause, or treat confidence as progress. If you later reject the answer in your human review, you can still preserve an experiment's observations or stop decision; the summary flags that the answer is no longer accepted. Altering the underlying report, selected evidence or action requires a new run and review, not editing a digest. An adjustment decision records intent only; it does not silently change or launch the action.
+# Check an edited experiment without exporting it
+
+`node reflection.mjs validate-experiment run.json review.json experiment.json` validates dates, observations, action preservation and run-bound acceptance without writing a summary. Valid pending plans pass, without implying that the trial started or succeeded. A structurally valid record remains self-reported. Invalid records exit with code 1 without echoing observations.
+# Respect withdrawn acceptance and stop observations
+
+Continue or adjust decisions require the current review to still accept the chosen answer. If acceptance is withdrawn, preserve the observations and choose stop, or retain an unfinished pending record without asserting continuation. An explicit stop observation must be the last observation, even on the same date. Put later reflections in a separate chosen source. These checks govern the local record; they do not execute, enforce or authenticate a real-world stop.
+# Append an explicit observation to a new record
+
+`node reflection.mjs append-observation run.json review.json experiment.json entry.json new-experiment.json` adds one observation to a pending experiment, preserving the original file and acceptance snapshot. Copy [the entry template](../templates/observation-entry.json) to a private folder and supply your actual dates and note. `started` must match any existing start date. A completed record cannot be extended through this command. It never infers a start time or executes the proposal.
+
+The entry has exactly `version: 1`, `started`, `observation` (date, kind, note), and `outcome`. Leave `outcome` null to continue recording a pending trial. To record a decision, supply exactly `reviewed`, `decision`, `reason`, and `alternative` as in the experiment contract. A stop observation requires a stop outcome in the same entry. Further ordinary observations require current human acceptance; an explicit stop remains possible after withdrawal. Chronology, the 30-observation bound and no-overwrite protection are validated before a new file is written.
