@@ -30,3 +30,6 @@ The summary validates the unchanged action, dates, notes and run binding, then d
 # Check an edited experiment without exporting it
 
 `node reflection.mjs validate-experiment run.json review.json experiment.json` validates dates, observations, action preservation and run-bound acceptance without writing a summary. Valid pending plans pass, without implying that the trial started or succeeded. A structurally valid record remains self-reported. Invalid records exit with code 1 without echoing observations.
+# Respect withdrawn acceptance and stop observations
+
+Continue or adjust decisions require the current review to still accept the chosen answer. If acceptance is withdrawn, preserve the observations and choose stop, or retain an unfinished pending record without asserting continuation. An explicit stop observation must be the last observation, even on the same date. Put later reflections in a separate chosen source. These checks govern the local record; they do not execute, enforce or authenticate a real-world stop.
