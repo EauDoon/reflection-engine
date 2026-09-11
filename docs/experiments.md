@@ -27,3 +27,6 @@ node reflection.mjs review-experiment run.json review.json experiment.json exper
 ```
 
 The summary validates the unchanged action, dates, notes and run binding, then displays the recorded decision as self-reported data. It does not judge whether the action worked, infer a cause, or treat confidence as progress. If you later reject the answer in your human review, you can still preserve an experiment's observations or stop decision; the summary flags that the answer is no longer accepted. Altering the underlying report, selected evidence or action requires a new run and review, not editing a digest. An adjustment decision records intent only; it does not silently change or launch the action.
+# Check an edited experiment without exporting it
+
+`node reflection.mjs validate-experiment run.json review.json experiment.json` validates dates, observations, action preservation and run-bound acceptance without writing a summary. Valid pending plans pass, without implying that the trial started or succeeded. A structurally valid record remains self-reported. Invalid records exit with code 1 without echoing observations.
