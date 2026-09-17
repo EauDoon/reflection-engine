@@ -33,6 +33,6 @@ Warnings identify an empty corpus, one declared episode, undated sources, repeat
 `node reflection.mjs preview corpus.json preview.json config.json` lists selected source IDs, question IDs, format, the exact prospective packet byte count, and each omitted source's filter reasons. The same filter function drives preview and build. A date window excludes undated sources; exclusions take effect even when a domain is included. Empty selection is explicit. Omissions can have several reasons.
 
 The preview contains no source text and is not the packet or an approval receipt. It reflects the files at that moment. Review the actual packet, and use an [integrity receipt](receipts.md) if you need to check its later bytes. Byte length is not a token count or a provider context-window guarantee. Omit the configuration argument to use the default quick run.
-# Derive an editable selection
+## Derive an editable selection
 
 `node reflection.mjs selection-plan corpus.json new-selection.json [config.json]` creates the exact ID list selected by the supplied date/domain filters (all supplied sources by default). Remove unwanted IDs, then pass the file to `select`. It contains no source text and discovers no additional files. An empty filter result stays empty.
