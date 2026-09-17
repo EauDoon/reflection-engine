@@ -12,7 +12,7 @@ Replace 4 with your chosen question ID. Pending or nonaccepted answers and insuf
 
 The plan also copies the complete human review into `acceptance_review`, preserving the recorded acceptance and its source/counterevidence checks against the same run. This includes your review notes, so keep the plan private unless you choose to share that context. Leave this snapshot unchanged when editing outcomes or changing your current review. It is self-attested recorded acceptance, not authenticated provenance or proof that review happened at a particular time. A hand-built record without this snapshot is rejected; the tool cannot detect someone inventing a structurally valid acceptance snapshot. Older plans missing it require a newly recorded acceptance review and a new plan; retain old observations separately rather than implying undocumented past acceptance.
 
-## Record what actually happened
+# Record what actually happened
 
 Edit a private copy of the experiment JSON. Set `started` to your declared YYYY-MM-DD start date if you started. Add at most 30 chronological `observations`, each containing `date`, `kind` (either `observation` or `stop`) and a `note` of at most 2000 characters. Dates must be on or after the start. For example:
 

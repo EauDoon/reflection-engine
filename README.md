@@ -35,7 +35,7 @@ The packet contains the bounded instructions, selected upstream question heading
 | Plan and review one chosen optional action | [Experiments](docs/experiments.md) |
 | Append observations and preserve explicit stop decisions | [Experiments](docs/experiments.md) |
 | Verify the exact packet you reviewed | [Integrity receipts](docs/receipts.md) |
-| Compare runs and review one experiment | [Follow-up](docs/follow-up.md) |
+| Compare runs and locate changed inputs | [Follow-up](docs/follow-up.md) |
 | Full local smoke test and command reference | [Offline companion](docs/offline.md) |
 
 ## Boundaries and privacy
