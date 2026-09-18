@@ -1,0 +1,17 @@
+Reflection Engine
+Copyright (c) 2026 Daniel Oon
+
+This product includes software and prompt content developed by Kevin Rose
+(https://github.com/kropdx/reflection-engine), based on the original prompt
+preserved unmodified in Reflection-Engine-v1.3.md.
+
+Original prompt by Kevin Rose. Upstream repository:
+https://github.com/kropdx/reflection-engine
+
+The prompt body in Reflection-Engine-v1.3.md and the original README are
+Kevin Rose's work from upstream commit a0a0c68.
+
+Fork additions (bounded edition and the local offline companion in
+reflection.mjs, plus the supporting docs, examples, templates, and tests)
+are by Daniel Oon and are licensed under the MIT License. See LICENSE
+for the full permission notice.
