@@ -1,5 +1,9 @@
 # Reflection Engine
 
+[![build](https://img.shields.io/github/actions/workflow/status/EauDoon/reflection-engine/offline.yml?branch=main)](https://github.com/EauDoon/reflection-engine/actions)
+[![license](https://img.shields.io/github/license/EauDoon/reflection-engine)](https://github.com/EauDoon/reflection-engine/blob/main/LICENSE)
+[![last commit](https://img.shields.io/github/last-commit/EauDoon/reflection-engine)](https://github.com/EauDoon/reflection-engine)
+
 A prompt for candid, evidence-grounded reflection, with an optional offline companion for preparing exactly what you choose to share. This fork preserves Kevin Rose's [original v1.3 prompt](Reflection-Engine-v1.3.md) and adds a bounded edition with source IDs, uncertainty, selected questions, and explicit exclusions.
 
 ## Start without installing anything
