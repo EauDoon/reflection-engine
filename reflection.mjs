@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readJSON, validateCorpus, writeNew } from './lib/core.mjs';
+import { readJSON, validateCorpus, writeNew, writeJSONNew } from './lib/core.mjs';
 import { configure, DEFAULT_CONFIG } from './lib/config.mjs';
 import { buildPacket } from './lib/packet.mjs';
 import { validateReport } from './lib/report.mjs';
@@ -26,7 +26,7 @@ try {
     console.log('Report structure and references are valid. Semantic review is still required.');
   } else if (args[0] === 'redact' && args.length === 4) {
     const result = redact(readJSON(args[1]), readJSON(args[2]));
-    writeNew(args[3], JSON.stringify(result.corpus, null, 2) + '\n');
+    writeJSONNew(args[3], result.corpus);
     console.log('Redacted corpus created; ' + result.count + ' literal substitutions. Review remaining identifying details.');
   } else if (args[0] === 'receipt' && args.length === 3) {
     writeNew(args[2], JSON.stringify(receiptFor(args[1]), null, 2) + '\n');
