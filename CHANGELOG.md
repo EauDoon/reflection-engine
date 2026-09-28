@@ -23,3 +23,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Evidence text, report prose, review notes, and observation notes reject control codes and hidden formatting that can spoof text or bypass literal redaction.
 - Run snapshots now copy selected source records instead of sharing them with the caller.
 - Custom question selections are copied so later edits do not change the caller's configuration.
+- Explicit source selection copies each chosen record so later edits to the input corpus do not change it.
