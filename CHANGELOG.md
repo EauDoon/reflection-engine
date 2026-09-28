@@ -19,3 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `redact` no longer reports success when the pretty-printed corpus exceeds the 1 MiB JSON input limit.
 - Markdown run comparison now reports when shared sources or answers were reordered.
 - Run comparison now reports when `source_ids` order changes without a source edit.
+- Added and removed question rows keep the recorded status and confidence.
