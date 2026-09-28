@@ -25,3 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Custom question selections are copied so later edits do not change the caller's configuration.
 - Explicit source selection copies each chosen record so later edits to the input corpus do not change it.
 - Merged corpora copy each source so later edits to an input do not change the merged evidence.
+- Receipt verification accepts the same SHA-256 digest written in uppercase.
