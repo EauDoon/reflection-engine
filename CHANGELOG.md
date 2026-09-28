@@ -24,3 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Run snapshots now copy selected source records instead of sharing them with the caller.
 - Custom question selections are copied so later edits do not change the caller's configuration.
 - Explicit source selection copies each chosen record so later edits to the input corpus do not change it.
+- Merged corpora copy each source so later edits to an input do not change the merged evidence.
