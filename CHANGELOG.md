@@ -22,3 +22,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added and removed question rows keep the recorded status and confidence.
 - Evidence text, report prose, review notes, and observation notes reject control codes and hidden formatting that can spoof text or bypass literal redaction.
 - Run snapshots now copy selected source records instead of sharing them with the caller.
+- Custom question selections are copied so later edits do not change the caller's configuration.
