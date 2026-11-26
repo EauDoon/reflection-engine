@@ -3,6 +3,9 @@
 Run `node reflection.mjs --help` to see the commands. Arguments are positional; unknown commands, extra arguments, invalid inputs, and existing output files exit with code 1. Success exits with code 0. Errors do not echo source text. No command sends a network request or invokes a model. Keep files in an existing private folder outside this repository.
 
 ```sh
+node reflection.mjs help <command>
+node reflection.mjs packet-stats corpus.json [config.json]
+node reflection.mjs check-budget <max-bytes> corpus.json [config.json]
 node reflection.mjs validate-corpus corpus.json
 node reflection.mjs questions new-questions.json
 node reflection.mjs selection-plan corpus.json new-selection.json [config.json]
@@ -38,6 +41,14 @@ Square brackets indicate an optional argument; do not type them. Use the same co
 Limits: JSON inputs at most 1 MiB and 128 nested containers, 200 sources, 20000 characters per source; receipt inputs at most 8 MiB. JSON files must contain valid UTF-8 and unique keys in every object, including names written using Unicode escapes. Duplicate fields are rejected before configuration or filtering, so an ambiguous domain or exclusion cannot silently take the last value. An optional UTF-8 BOM is accepted. Invalid bytes are rejected instead of being replaced in the evidence. A large corpus may exceed a provider's context window despite passing local checks. Build a narrower run when necessary. Comparison bundles repeat corpus and report data and share the 1 MiB limit. Split a large run into smaller selected corpora rather than bypassing the bounds.
 
 JSON and receipt packet inputs are opened once and checked as regular files using that descriptor. Reads stop at the respective 1 MiB or 8 MiB limit plus one overflow-detection byte, even if the file grows after its size check. POSIX opens are nonblocking so a FIFO cannot wait indefinitely for a writer. The descriptor closes on success and failure. This bounds ingestion; it does not make a concurrently edited file an immutable snapshot.
+
+## Inspect a packet before writing it
+
+Run `node reflection.mjs help build` to print the documented arguments for one command. In a clone or extracted download, open [the workflow map](architecture.html) in a browser to trace the files and commands behind each handoff.
+
+`packet-stats` writes one JSON object to standard output. It counts selected and omitted sources, selected episodes, undated selected sources, and questions. It measures the final UTF-8 packet, including instructions, escaping, formatting, and the selected report contract. The output omits prose, labels, paths, and identifiers. Supply the same configuration to `build` to reproduce the measurement.
+
+`check-budget` compares the same byte count with a caller-supplied positive whole number. An exact fit passes. The result contains `packet_bytes`, `limit_bytes`, and `within_budget`. Exit code 1 with a JSON result means the packet exceeded the ceiling. Invalid input produces an error on standard error instead. Both commands leave the filesystem untouched. A byte ceiling measures file size and provides no estimate of a provider's token budget.
 
 ## Synthetic end-to-end validation
 

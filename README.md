@@ -30,6 +30,8 @@ The packet contains the bounded instructions, selected upstream question heading
 
 | Workflow | Command or guide |
 | --- | --- |
+| Explore the offline workflow and its file handoffs | [Interactive workflow map](docs/architecture.html) · open the HTML file in your downloaded copy |
+| Check aggregate packet size and enforce a byte ceiling | [Packet preflight](docs/offline.md) |
 | Import explicitly chosen text files | [Source preparation](docs/source-preparation.md) |
 | Quick, full, custom question IDs, dates and domains | [Configuration](docs/configuration.md) |
 | Literal replacement before sharing | [Redaction](docs/redaction.md) |
