@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><title>Evidence workflow | Reflection Engine</title>
+<style>
+:root{color-scheme:dark;--bg:#10171c;--panel:#182127;--line:#35444b;--text:#f2f2e7;--sub:#b3c2c1;--mint:#7ae4bb;--mono:ui-monospace,"SFMono-Regular",Consolas,monospace;font:16px/1.55 system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--mint);text-underline-offset:.22em}a:hover{text-decoration-thickness:2px}
+main,header,footer{max-width:1180px;margin:auto;padding:0 clamp(16px,4vw,56px)}header{display:flex;align-items:center;justify-content:space-between;min-height:68px;border-bottom:1px solid var(--line);font:14px var(--mono)}
+.brand{color:var(--text);font-weight:650;letter-spacing:-.04em}.brand::before{content:"";display:inline-block;width:.65rem;height:.65rem;background:var(--mint);border-radius:50%;margin-right:.65rem}
+h1,h2,h3,p{margin:0}h1{font:500 clamp(40px,7vw,78px)/1.03 Georgia,serif;letter-spacing:-.06em;margin:.25em 0}h2{font:500 clamp(25px,4vw,37px)/1.15 Georgia,serif;letter-spacing:-.035em}
+.intro{margin:clamp(25px,5vw,65px) 0 28px}.intro p{color:var(--sub);max-width:63ch}.eyebrow,small,summary,label{font:600 .75rem/1.5 var(--mono);letter-spacing:.065em;color:var(--mint)}
+.surface{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(245px,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.canvas{min-width:0;background:radial-gradient(ellipse at 45% 45%,#1a3030,#131b22 68%);position:relative}
+#drawing{display:block;width:100%;height:clamp(310px,39vw,400px);touch-action:pan-y}
+#drawing .node{cursor:pointer}#drawing text{fill:#f6f7ef;font:600 13px var(--mono);paint-order:stroke;stroke:#152027;stroke-width:4;stroke-linejoin:round}
+.toolbar{padding:12px 15px;display:flex;flex-wrap:wrap;gap:.4em;align-items:center;border-top:1px solid var(--line);background:#141e24}
+.toolbar button,select{min-height:42px;padding:8px 12px;border:1px solid #506265;border-radius:7px;background:#1b2a30;color:var(--text);font:500 14px var(--mono);cursor:pointer}
+:focus-visible{outline:3px solid #ffd28a;outline-offset:-3px}.toolbar button:hover{background:#2c3f42}
+.inspector{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:clamp(20px,3vw,38px);border-left:1px solid var(--line);background:var(--panel)}
+select{max-width:100%;width:100%}code,.commands{font:13px/1.6 var(--mono);color:#e2cea9;overflow-wrap:anywhere}.inspector p,.library p{font-size:15px}.inputs{color:var(--sub)}
+#feedback{min-height:1.5em;color:var(--sub);font:12px/1.6 var(--mono);margin:8px 0}
+details{margin:16px 0;border-block:1px solid var(--line);padding:14px 0}summary{cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.55 var(--mono);color:var(--sub);margin-block-end:0}
+.library{margin:42px 0}.cards{margin:20px 0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+article{border:1px solid var(--line);padding:19px;border-radius:12px}article h3{font:500 23px/1.2 Georgia,serif;margin:8px 0}
+article p{margin:8px 0}footer{padding-block:22px;border-top:1px solid var(--line);color:var(--sub);font-size:14px}
+[hidden]{display:none!important}@media(max-width:720px){.surface{grid-template-columns:1fr}.inspector{border-left:0;border-top:1px solid var(--line)}#drawing{height:320px}.intro{margin-top:30px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+@media print{html,body{color:#111;background:#fff}header,.surface,#feedback,details,footer,.eyebrow{display:none}small,code,.commands,.inputs,.intro p,a{color:#333}.cards{display:block}article{break-inside:avoid;margin:8px 0}main{max-width:none;padding:0}}
+</style></head><body>
+<header><span class="brand">Reflection Engine</span><a href="https://github.com/EauDoon/reflection-engine">Repository ↗</a></header>
+<main><div class="intro"><span class="eyebrow">OFFLINE COMPANION</span><h1>Evidence workflow</h1><p>Follow a source from a chosen episode to a reviewed decision. Select an artifact to see the files and commands behind it.</p></div>
+<section class="surface" id="surface" aria-label="Interactive workflow map" hidden>
+  <div class="canvas"><svg id="drawing" tabindex="0" role="group" aria-label="3D workflow map. Drag horizontally or use arrow keys to orbit. Choose an artifact in the adjacent selector."></svg>
+    <div class="toolbar" aria-label="Camera controls"><button id="left" aria-label="Rotate left">↶ Left</button><button id="right" aria-label="Rotate right">Right ↷</button><button id="reset">Reset view</button></div></div>
+  <div class="inspector"><label for="stage">INSPECT ARTIFACT</label><select id="stage"></select><h2 id="label"></h2><code id="file"></code><p id="about"></p><p id="inputs" class="inputs"></p><p id="cmds" class="commands"></p><a id="guide"></a></div>
+</section>
+<p id="feedback" role="status" hidden></p>
+<details id="query" hidden><summary>Read-only graph data</summary><pre id="response"></pre></details>
+<section class="library" aria-label="Printable workflow guide"><h2>Artifact guide</h2>
+<div class="cards">
+      <article id="stage-corpus" data-id="corpus" data-xyz="-0.75,0.06,-0.10" data-inputs="" data-phase="Prepare">
+        <small>Prepare</small><h3>Source corpus</h3><code>sources</code>
+        <p>Collect chosen episodes in a corpus and inspect its dates, domains and repeated text.</p><p class="inputs">Starts with explicitly chosen source episodes.</p>
+        <p class="commands">import-text · inspect · select</p><a href="../docs/source-preparation.md">Source preparation</a>
+      </article>
+      <article id="stage-packet" data-id="packet" data-xyz="-0.38,-0.62,0.42" data-inputs="corpus" data-phase="Prepare">
+        <small>Prepare</small><h3>Bounded packet</h3><code>packet.md</code>
+        <p>Apply question and source filters. Measure the finished packet, then read the exact file before sharing.</p><p class="inputs">Uses Source corpus.</p>
+        <p class="commands">preview · packet-stats · check-budget · build</p><a href="../docs/configuration.md">Packet configuration</a>
+      </article>
+      <article id="stage-receipt" data-id="receipt" data-xyz="0.30,-0.74,-0.28" data-inputs="packet" data-phase="Verify">
+        <small>Verify</small><h3>Byte receipt</h3><code>receipt.json</code>
+        <p>Bind a receipt to the reviewed packet bytes. Verify it again before using that file.</p><p class="inputs">Uses Bounded packet.</p>
+        <p class="commands">receipt · verify-receipt</p><a href="../docs/receipts.md">Integrity receipts</a>
+      </article>
+      <article id="stage-report" data-id="report" data-xyz="-0.21,0.46,-0.42" data-inputs="corpus" data-phase="Review">
+        <small>Review</small><h3>Structured report</h3><code>report.json</code>
+        <p>Draft a local report or enter a response yourself. Validate answers against the configured corpus.</p><p class="inputs">Uses Source corpus.</p>
+        <p class="commands">draft-report · validate-report</p><a href="../docs/report-contract.md">Report contract</a>
+      </article>
+      <article id="stage-run" data-id="run" data-xyz="0.25,0.13,0.55" data-inputs="corpus report" data-phase="Review">
+        <small>Review</small><h3>Run snapshot</h3><code>run.json</code>
+        <p>Freeze selected sources, the configuration and the validated report for an evidence map or comparison.</p><p class="inputs">Uses Source corpus and Structured report.</p>
+        <p class="commands">pack-run · evidence-map · compare</p><a href="../docs/follow-up.md">Follow-up comparisons</a>
+      </article>
+      <article id="stage-review" data-id="review" data-xyz="0.67,-0.18,-0.32" data-inputs="run" data-phase="Review">
+        <small>Review</small><h3>Human review</h3><code>review.json</code>
+        <p>Record explicit human decisions about each answer. Inspect gaps and export accepted excerpts.</p><p class="inputs">Uses Run snapshot.</p>
+        <p class="commands">review-plan · review-gaps · export-accepted</p><a href="../docs/review-workflow.md">Review decisions</a>
+      </article>
+      <article id="stage-experiment" data-id="experiment" data-xyz="0.54,0.72,0.12" data-inputs="run review" data-phase="Follow up">
+        <small>Follow up</small><h3>Optional experiment</h3><code>experiment.json</code>
+        <p>Use a run and its review to plan one accepted action. Record observations and your stop decision.</p><p class="inputs">Uses Run snapshot and Human review.</p>
+        <p class="commands">plan-experiment · append-observation</p><a href="../docs/experiments.md">Experiment records</a>
+      </article>
+</div></section></main>
+<footer>Reflection Engine · Offline workflow on Daniel Oon’s fork of Kevin Rose’s original prompt.</footer>
+<script>
+'use strict';
+const el = id => document.getElementById(id);
+const nodes = Array.from(document.querySelectorAll('.cards article'), article => ({
+  id:article.dataset.id, phase:article.dataset.phase, point:article.dataset.xyz.split(',').map(Number),
+  inputs:article.dataset.inputs.split(' ').filter(Boolean), label:article.querySelector('h3').textContent,
+  file:article.querySelector('code').textContent, about:article.querySelector('p').textContent,
+  commands:article.querySelector('.commands').textContent, guide:article.querySelector('a')
+}));
+const byId = new Map(nodes.map(node => [node.id,node]));
+const plot = el('drawing'), selector = el('stage');
+const ns = 'http://www.w3.org/2000/svg';
+const svg = (tag, attrs) => {
+  const child = document.createElementNS(ns,tag);
+  for (const [key,value] of Object.entries(attrs)) child.setAttribute(key,String(value));
+  return child;
+};
+for (const node of nodes) selector.add(new Option(node.label,node.id));
+let active, yaw=0, pitch=0;
+function draw() {
+  const width=plot.clientWidth, height=plot.clientHeight;
+  if (!width || !active) return;
+  plot.setAttribute('viewBox','0 0 '+width+' '+height);
+  const positions=new Map();
+  for (const node of nodes) {
+    const [x,y,z]=node.point;
+    const side=x*Math.cos(yaw)+z*Math.sin(yaw);
+    const back=z*Math.cos(yaw)-x*Math.sin(yaw);
+    const up=y*Math.cos(pitch)-back*Math.sin(pitch);
+    const depth=back*Math.cos(pitch)+y*Math.sin(pitch);
+    const scale=3/(3-depth);
+    positions.set(node.id,{x:width*(.5+side*.43*scale),y:height*(.49+up*.43*scale),depth});
+  }
+  const scene=document.createDocumentFragment();
+  for (let i=1;i<=54;i++) {
+    scene.append(svg('circle',{cx:(i*73%179)/179*width,cy:(i*47%131)/131*height,r:i%3===0?1.25:.7,fill:'#4b6768'}));
+  }
+  for (const node of nodes) {
+    const end=positions.get(node.id);
+    for(const input of node.inputs) {
+      const start=positions.get(input);
+      const connected=input===active.id || node.id===active.id;
+      scene.append(svg('line',{x1:start.x,y1:start.y,x2:end.x,y2:end.y,stroke:connected?'#7ae4bb':'#4e6d71','stroke-width':connected?2:1.25}));
+    }
+  }
+  const labels=[];
+  const sorted=nodes.slice().sort((a,b)=>positions.get(a.id).depth-positions.get(b.id).depth);
+  for(const node of sorted) {
+    const p=positions.get(node.id), selected=node===active;
+    const g=svg('g',{class:'node','data-id':node.id,transform:'translate('+p.x+' '+p.y+')'});
+    g.append(svg('circle',{r:20,fill:'transparent'}));
+    if(selected) g.append(svg('circle',{r:13,fill:'#234e45',stroke:'#7ae4bb'}));
+    g.append(svg('circle',{r:6+p.depth,fill:selected?'#a2ffd6':'#dbc299'}));
+    // Keep complete labels inside the viewport and away from earlier labels.
+    const halfWidth=node.label.length*4.15;
+    const cx=Math.min(width-halfWidth-4,Math.max(halfWidth+4,p.x));
+    const offsets=[26,-13,43,-30,60,-47];
+    const offset=offsets.find(dy=>{
+      const base=p.y+dy;
+      return base>14 && base<height-3 && !labels.some(box=>
+        Math.abs(base-box.base)<15 && Math.abs(cx-box.x)<halfWidth+box.halfWidth+3);
+    }) ?? 26;
+    labels.push({x:cx,base:p.y+offset,halfWidth});
+    const text=svg('text',{x:cx-p.x,y:offset,'text-anchor':'middle'});
+    text.textContent=node.label;
+    g.append(text);
+    scene.append(g);
+  }
+  plot.replaceChildren(scene);
+}
+function choose(id) {
+  active=byId.get(id) || nodes[0];
+  selector.value=active.id;
+  el('label').textContent=active.label;
+  el('file').textContent=active.file;
+  el('about').textContent=active.about;
+  el('inputs').textContent=active.inputs.length?'Uses '+active.inputs.map(parent=>byId.get(parent).label).join(' and ')+'.':'Starts with explicitly chosen source episodes.';
+  el('cmds').textContent=active.commands;
+  el('guide').textContent=active.guide.textContent;
+  el('guide').href=active.guide.href;
+  const consumers=nodes.filter(node=>node.inputs.includes(active.id)).map(node=>node.id);
+  el('response').textContent=JSON.stringify({data:{artifact:{id:active.id,label:active.label,phase:active.phase,inputs:active.inputs,consumers}}},null,2);
+  el('feedback').textContent=active.label+' selected · '+consumers.length+' downstream '+(consumers.length===1?'artifact':'artifacts');
+  draw();
+}
+function select(id) {
+  // Assigning the fragment also works from file:// with no network or server.
+  location.hash='artifact-'+id;
+  choose(id);
+}
+function fromHash(){choose(location.hash.slice(1).replace(/^artifact-/,'').toLowerCase());}
+function rotate(dx,dy=0){yaw+=dx;pitch=Math.max(-.75,Math.min(.75,pitch+dy));draw();}
+el('surface').hidden=false;el('query').hidden=false;el('feedback').hidden=false;
+selector.addEventListener('change',()=>select(selector.value));
+el('left').onclick=()=>rotate(-.18);el('right').onclick=()=>rotate(.18);
+el('reset').onclick=()=>{yaw=0;pitch=0;draw();};
+plot.addEventListener('keydown',event=>{
+  const angles={ArrowLeft:[-.14,0],ArrowRight:[.14,0],ArrowUp:[0,-.1],ArrowDown:[0,.1]};
+  if(Object.hasOwn(angles,event.key)){event.preventDefault();rotate(...angles[event.key]);}
+});
+let drag;
+plot.addEventListener('pointerdown',event=>{
+  if(event.button!==0||drag) return;
+  drag={id:event.pointerId,start:event.clientX,last:event.clientX,moved:false,target:event.target.closest('[data-id]')?.dataset.id};
+  plot.setPointerCapture(event.pointerId);
+});
+plot.addEventListener('pointermove',event=>{
+  if(!drag||drag.id!==event.pointerId) return;
+  if(Math.abs(event.clientX-drag.start)>4) drag.moved=true;
+  if(drag.moved){rotate((event.clientX-drag.last)*.009);drag.last=event.clientX;}
+});
+plot.addEventListener('pointerup',event=>{
+  if(!drag||drag.id!==event.pointerId) return;
+  if(!drag.moved && drag.target) select(drag.target);
+  drag=null;
+});
+plot.addEventListener('lostpointercapture',()=>{drag=null;});
+window.addEventListener('resize',draw);window.addEventListener('hashchange',fromHash);fromHash();
+</script></body></html>

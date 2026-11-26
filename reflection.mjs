@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-import { readJSON, validateCorpus, writeNew, writeJSONNew } from './lib/core.mjs';
+import { readFileSync } from 'node:fs';
+import { packetStats } from './lib/preflight.mjs';
+import { requireThat, readJSON, validateCorpus, writeNew, writeJSONNew } from './lib/core.mjs';
 import { configure, DEFAULT_CONFIG } from './lib/config.mjs';
 import { buildPacket } from './lib/packet.mjs';
 import { validateReport } from './lib/report.mjs';
@@ -10,7 +12,23 @@ import { runWorkflow, WORKFLOW_COMMANDS } from './lib/workflows.mjs';
 const args = process.argv.slice(2);
 try {
   if (args.length === 1 && ['--help','-h'].includes(args[0])) {
-    console.log('Commands: validate-corpus, build, redact, receipt, verify-receipt, validate-report, compare, ' + WORKFLOW_COMMANDS.join(', ') + '. See docs/offline.md for positional arguments.');
+    console.log('Commands: help, packet-stats, check-budget, validate-corpus, build, redact, receipt, verify-receipt, validate-report, compare, ' + WORKFLOW_COMMANDS.join(', ') + '. Run node reflection.mjs help <command> for positional arguments.');
+  } else if (args[0] === 'help' && args.length === 2) {
+    const reference = readFileSync(new URL('./docs/offline.md', import.meta.url), 'utf8');
+    const usage = reference.split(/\r?\n/).find(line => line.split(' ')[2] === args[1] && line.startsWith('node reflection.mjs '));
+    requireThat(usage, 'Unknown command. Run node reflection.mjs --help for the command list.');
+    console.log(usage);
+  } else if (args[0] === 'packet-stats' && [2, 3].includes(args.length)) {
+    const config = args[2] ? readJSON(args[2]) : DEFAULT_CONFIG;
+    console.log(JSON.stringify(packetStats(readJSON(args[1]), config)));
+  } else if (args[0] === 'check-budget' && [3, 4].includes(args.length)) {
+    const limit = Number(args[1]);
+    requireThat(/^[1-9]\d*$/.test(args[1]) && Number.isSafeInteger(limit), 'Byte limit must be a positive safe integer.');
+    const config = args[3] ? readJSON(args[3]) : DEFAULT_CONFIG;
+    const { packet_bytes } = packetStats(readJSON(args[2]), config);
+    const within_budget = packet_bytes <= limit;
+    console.log(JSON.stringify({ packet_bytes, limit_bytes: limit, within_budget }));
+    if (!within_budget) process.exitCode = 1;
   } else if (runWorkflow(args)) {
     // Preparation and review workflows create only explicitly named new files.
   } else if (args[0] === 'validate-corpus' && args.length === 2) {
@@ -37,7 +55,7 @@ try {
   } else if (args[0] === 'compare' && args.length === 4) {
     writeNew(args[3], compareRuns(readJSON(args[1]), readJSON(args[2])));
     console.log('Run comparison created. Interpret changes against source evidence.');
-  } else { throw new Error('Usage: node reflection.mjs validate-corpus <corpus.json> | build <corpus.json> <new-packet.md> [config.json] | validate-report <report.json> <corpus.json> [config.json] | redact <corpus.json> <rules.json> <new-corpus.json> | receipt <packet.md> <new-receipt.json> | verify-receipt <receipt.json> <packet.md> | compare <before-run.json> <after-run.json> <new-comparison.md>'); }
+  } else { throw new Error('Invalid command or arguments. Run node reflection.mjs --help for all commands or node reflection.mjs help <command> for usage.'); }
 } catch (error) {
   console.error(`Error: ${error.code ? 'File operation failed (' + error.code + ')' : error.message}`);
   process.exitCode = 1;

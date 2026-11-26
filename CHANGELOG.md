@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-26
+
+### Added in the offline companion
+
+- Query positional help for an individual command. Invalid invocations now point to the full list.
+- Inspect aggregate packet statistics and check the exact byte size against a chosen ceiling before writing.
+- Explore the companion’s file handoffs in a local, keyboard- and touch-accessible 3D workflow map, including a printable guide and read-only data view.
+
 ### Added
 
 - Explicit NOTICE file crediting upstream author Kevin Rose.
