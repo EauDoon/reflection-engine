@@ -12,8 +12,10 @@ h1,h2,h3,p{margin:0}h1{font:500 clamp(40px,7vw,78px)/1.03 Georgia,serif;letter-s
 .canvas{min-width:0;background:radial-gradient(ellipse at 45% 45%,#1a3030,#131b22 68%);position:relative}
 #drawing{display:block;width:100%;height:clamp(310px,39vw,400px);touch-action:pan-y}
 #drawing .node{cursor:pointer}#drawing text{fill:#f6f7ef;font:600 13px var(--mono);paint-order:stroke;stroke:#152027;stroke-width:4;stroke-linejoin:round}
-.toolbar{padding:12px 15px;display:flex;flex-wrap:wrap;gap:.4em;align-items:center;border-top:1px solid var(--line);background:#141e24}
-.toolbar button,select{min-height:42px;padding:8px 12px;border:1px solid #506265;border-radius:7px;background:#1b2a30;color:var(--text);font:500 14px var(--mono);cursor:pointer}
+.direction{margin:0;padding:12px 16px 0;color:#c1d2d2;font:12px/1.4 var(--mono)}
+.phase{font:600 12px/1.5 var(--mono);color:var(--mint)}.artifact-meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:.55em}
+.toolbar{padding:12px 15px;display:flex;flex-wrap:wrap;gap:.4em;align-items:center;border-top:1px solid var(--line);background:#141e24}.toolbar button{min-width:0}
+.toolbar button,select{min-height:44px;padding:8px 12px;border:1px solid #506265;border-radius:7px;background:#1b2a30;color:var(--text);font:500 14px var(--mono);cursor:pointer}
 :focus-visible{outline:3px solid #ffd28a;outline-offset:-3px}.toolbar button:hover{background:#2c3f42}
 .inspector{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:clamp(20px,3vw,38px);border-left:1px solid var(--line);background:var(--panel)}
 select{max-width:100%;width:100%}code,.commands{font:13px/1.6 var(--mono);color:#e2cea9;overflow-wrap:anywhere}.inspector p,.library p{font-size:15px}.inputs{color:var(--sub)}
@@ -23,22 +25,23 @@ details{margin:16px 0;border-block:1px solid var(--line);padding:14px 0}summary{
 article{border:1px solid var(--line);padding:19px;border-radius:12px}article h3{font:500 23px/1.2 Georgia,serif;margin:8px 0}
 article p{margin:8px 0}footer{padding-block:22px;border-top:1px solid var(--line);color:var(--sub);font-size:14px}
 [hidden]{display:none!important}@media(max-width:720px){.surface{grid-template-columns:1fr}.inspector{border-left:0;border-top:1px solid var(--line)}#drawing{height:320px}.intro{margin-top:30px}}
+@media(max-width:380px){.toolbar{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:5px;padding:8px}.toolbar button{padding:6px 3px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 @media print{html,body{color:#111;background:#fff}header,.surface,#feedback,details,footer,.eyebrow{display:none}small,code,.commands,.inputs,.intro p,a{color:#333}.cards{display:block}article{break-inside:avoid;margin:8px 0}main{max-width:none;padding:0}}
 </style></head><body>
 <header><span class="brand">Reflection Engine</span><a href="https://github.com/EauDoon/reflection-engine">Repository ↗</a></header>
 <main><div class="intro"><span class="eyebrow">OFFLINE COMPANION</span><h1>Evidence workflow</h1><p>Follow a source from a chosen episode to a reviewed decision. Select an artifact to see the files and commands behind it.</p></div>
 <section class="surface" id="surface" aria-label="Interactive workflow map" hidden>
-  <div class="canvas"><svg id="drawing" tabindex="0" role="group" aria-label="3D workflow map. Drag horizontally or use arrow keys to orbit. Choose an artifact in the adjacent selector."></svg>
+  <div class="canvas"><p class="direction">Input → consuming artifact</p><svg id="drawing" tabindex="0" role="group" aria-label="3D workflow map. Arrows point from each input to the artifact using it. Drag horizontally or use arrow keys to orbit. Choose an artifact in the adjacent selector."></svg>
     <div class="toolbar" aria-label="Camera controls"><button id="left" aria-label="Rotate left">↶ Left</button><button id="right" aria-label="Rotate right">Right ↷</button><button id="reset">Reset view</button></div></div>
-  <div class="inspector"><label for="stage">INSPECT ARTIFACT</label><select id="stage"></select><h2 id="label"></h2><code id="file"></code><p id="about"></p><p id="inputs" class="inputs"></p><p id="cmds" class="commands"></p><a id="guide"></a></div>
+  <div class="inspector"><label for="stage">INSPECT ARTIFACT</label><select id="stage"></select><h2 id="label"></h2><div class="artifact-meta"><span class="phase" id="phase"></span><code id="file"></code></div><p id="about"></p><p id="inputs" class="inputs"></p><p id="cmds" class="commands"></p><a id="guide"></a></div>
 </section>
 <p id="feedback" role="status" hidden></p>
 <details id="query" hidden><summary>Read-only graph data</summary><pre id="response"></pre></details>
 <section class="library" aria-label="Printable workflow guide"><h2>Artifact guide</h2>
 <div class="cards">
       <article id="stage-corpus" data-id="corpus" data-xyz="-0.75,0.06,-0.10" data-inputs="" data-phase="Prepare">
-        <small>Prepare</small><h3>Source corpus</h3><code>sources</code>
+        <small>Prepare</small><h3>Source corpus</h3><code>corpus.json</code>
         <p>Collect chosen episodes in a corpus and inspect its dates, domains and repeated text.</p><p class="inputs">Starts with explicitly chosen source episodes.</p>
         <p class="commands">import-text · inspect · select</p><a href="../docs/source-preparation.md">Source preparation</a>
       </article>
@@ -111,12 +114,24 @@ function draw() {
   for (let i=1;i<=54;i++) {
     scene.append(svg('circle',{cx:(i*73%179)/179*width,cy:(i*47%131)/131*height,r:i%3===0?1.25:.7,fill:'#4b6768'}));
   }
+  const arrows=[];
   for (const node of nodes) {
     const end=positions.get(node.id);
     for(const input of node.inputs) {
       const start=positions.get(input);
       const connected=input===active.id || node.id===active.id;
-      scene.append(svg('line',{x1:start.x,y1:start.y,x2:end.x,y2:end.y,stroke:connected?'#7ae4bb':'#4e6d71','stroke-width':connected?2:1.25}));
+      const stroke=connected?'#81ecc0':'#92acb0';
+      scene.append(svg('line',{x1:start.x,y1:start.y,x2:end.x,y2:end.y,stroke,'stroke-width':connected?2.5:1.65}));
+      const dx=end.x-start.x, dy=end.y-start.y, distance=Math.hypot(dx,dy);
+      if(distance>22) {
+        // Place the arrow between nodes so the destination dot never covers its tip.
+        const fraction=Math.min(.82,1-14/distance);
+        const x=start.x+dx*fraction, y=start.y+dy*fraction;
+        arrows.push({x,y});
+        const angle=Math.atan2(dy,dx)*180/Math.PI;
+        scene.append(svg('path',{d:'M -7 -4.5 L 3 0 L -7 4.5 Z',fill:stroke,
+          transform:'translate('+x+' '+y+') rotate('+angle+')'}));
+      }
     }
   }
   const labels=[];
@@ -133,7 +148,8 @@ function draw() {
     const offsets=[26,-13,43,-30,60,-47];
     const offset=offsets.find(dy=>{
       const base=p.y+dy;
-      return base>14 && base<height-3 && !labels.some(box=>
+      const coversArrow=arrows.some(arrow=>Math.abs(cx-arrow.x)<halfWidth+5 && arrow.y>base-24 && arrow.y<base+14);
+      return base>14 && base<height-3 && !coversArrow && !labels.some(box=>
         Math.abs(base-box.base)<15 && Math.abs(cx-box.x)<halfWidth+box.halfWidth+3);
     }) ?? 26;
     labels.push({x:cx,base:p.y+offset,halfWidth});
@@ -148,6 +164,7 @@ function choose(id) {
   active=byId.get(id) || nodes[0];
   selector.value=active.id;
   el('label').textContent=active.label;
+  el('phase').textContent=active.phase+' ·';
   el('file').textContent=active.file;
   el('about').textContent=active.about;
   el('inputs').textContent=active.inputs.length?'Uses '+active.inputs.map(parent=>byId.get(parent).label).join(' and ')+'.':'Starts with explicitly chosen source episodes.';
@@ -156,7 +173,8 @@ function choose(id) {
   el('guide').href=active.guide.href;
   const consumers=nodes.filter(node=>node.inputs.includes(active.id)).map(node=>node.id);
   el('response').textContent=JSON.stringify({data:{artifact:{id:active.id,label:active.label,phase:active.phase,inputs:active.inputs,consumers}}},null,2);
-  el('feedback').textContent=active.label+' selected · '+consumers.length+' downstream '+(consumers.length===1?'artifact':'artifacts');
+  const next=consumers.map(id=>byId.get(id).label).join(', ');
+  el('feedback').textContent=active.label+' selected · '+(next?'Used by '+next:'Final artifact on this branch');
   draw();
 }
 function select(id) {
